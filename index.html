@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EuthCap · Status</title>
+<meta name="description" content="Live status for the EuthCap Telegram bot." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg: #0a0d12;
+    --bg-vignette: radial-gradient(120% 120% at 50% -10%, #131a24 0%, #0a0d12 55%, #07090d 100%);
+    --glass: rgba(255,255,255,0.045);
+    --glass-border: rgba(255,255,255,0.09);
+    --text: #eef1f5;
+    --muted: #7c8794;
+    --mint: #3ee8b5;
+    --amber: #e8b93e;
+    --red: #ef5a6f;
+    --violet: #8b7cf0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background: var(--bg-vignette);
+    color: var(--text);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 32px 20px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  /* faint vertical scan lines for texture, not a spotlight gradient */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 64px);
+    pointer-events:none;
+  }
+  .card{
+    position:relative;
+    width:100%;
+    max-width: 460px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    padding: 36px 32px 28px;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot{
+    width:6px;height:6px;border-radius:50%;
+    background: var(--violet);
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size: 28px;
+    line-height:1.25;
+    margin: 0 0 20px;
+    letter-spacing:-0.01em;
+  }
+  #headline-status{ color: var(--mint); }
+
+  .pulse-wrap{
+    height: 56px;
+    margin: 4px 0 22px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.05);
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+  }
+  .pulse-wrap svg{ width:100%; height:100%; display:block; }
+  .pulse-line{
+    fill:none;
+    stroke: var(--mint);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgba(62,232,181,0.5));
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+    animation: draw 2.6s linear infinite;
+  }
+  @keyframes draw{
+    0% { stroke-dashoffset: 900; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  .status-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 22px;
+  }
+  .pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    border:1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+  }
+  .pill .led{
+    width:7px;height:7px;border-radius:50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px currentColor;
+  }
+  .pill.online .led{ background: var(--mint); color: var(--mint); }
+  .pill.offline .led{ background: var(--red); color: var(--red); }
+  .pill.online{ color: var(--mint); }
+  .pill.offline{ color: var(--red); }
+  .pill.checking{ color: var(--amber); }
+  .pill.checking .led{ color: var(--amber); }
+
+  #checked-at{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .divider{
+    height:1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    margin: 22px 0;
+  }
+
+  .section-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .commands{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .commands li{
+    display:flex;
+    gap:12px;
+    align-items:baseline;
+    font-size: 13.5px;
+  }
+  .commands code{
+    font-family:'JetBrains Mono', monospace;
+    color: var(--violet);
+    background: rgba(139,124,240,0.1);
+    padding: 2px 7px;
+    border-radius:6px;
+    font-size:12.5px;
+    white-space:nowrap;
+  }
+  .commands span{ color: var(--muted); }
+
+  .note{
+    margin-top: 22px;
+    font-size: 12.5px;
+    line-height:1.6;
+    color: var(--muted);
+  }
+  .note strong{ color: var(--text); font-weight:500; }
+
+  footer{
+    margin-top: 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  footer a{ color: var(--muted); text-decoration:none; border-bottom:1px dotted rgba(124,135,148,0.5); }
+  footer a:hover{ color: var(--text); }
+
+  @media (prefers-reduced-motion: reduce){
+    .pulse-line{ animation: none; stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="eyebrow"><span class="dot"></span>EuthCap · Webhook Status</div>
+
+    <h1 id="headline">Checking the <span id="headline-status">connection</span>…</h1>
+
+    <div class="pulse-wrap" aria-hidden="true">
+      <svg viewBox="0 0 400 56" preserveAspectRatio="none">
+        <path class="pulse-line" d="M0,28 L60,28 L75,10 L90,46 L105,28 L140,28 L155,14 L170,42 L185,28 L400,28" />
+      </svg>
+    </div>
+
+    <div class="status-row">
+      <span class="pill checking" id="status-pill"><span class="led"></span><span id="status-text">Checking</span></span>
+      <span id="checked-at">—</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="section-label">Talk to it on Telegram</p>
+    <ul class="commands">
+      <li><code>/movie</code><span>search a movie</span></li>
+      <li><code>/series</code><span>search a TV series</span></li>
+      <li><code>/anime</code><span>search an anime</span></li>
+      <li><code>/tmdb</code><span>fetch by TMDb ID</span></li>
+      <li><code>/imdb</code><span>fetch by IMDb ID</span></li>
+    </ul>
+
+    <p class="note">This page only reports whether the bot's backend is reachable. <strong>To use EuthCap, open the bot in Telegram</strong> and send it a command directly — this page doesn't chat back.</p>
+
+    <footer>
+      <span>EuthCap · by Euthle</span>
+      <span id="latency">v1.0</span>
+    </footer>
+  </div>
+
+  <script>
+    const pill = document.getElementById('status-pill');
+    const statusText = document.getElementById('status-text');
+    const headlineStatus = document.getElementById('headline-status');
+    const headline = document.getElementById('headline');
+    const checkedAt = document.getElementById('checked-at');
+    const latencyEl = document.getElementById('latency');
+
+    function setState(state, detail) {
+      pill.className = 'pill ' + state;
+      if (state === 'online') {
+        statusText.textContent = 'Online';
+        headlineStatus.textContent = 'is alive';
+        headline.innerHTML = 'Webhook <span id="headline-status" style="color:var(--mint)">is alive</span>.';
+      } else if (state === 'offline') {
+        statusText.textContent = 'Unreachable';
+        headline.innerHTML = 'Webhook is <span style="color:var(--red)">unreachable</span>.';
+      }
+      if (detail) checkedAt.textContent = detail;
+    }
+
+    const startedAt = performance.now();
+    fetch('/api/webhook', { method: 'GET', cache: 'no-store' })
+      .then((res) => {
+        const ms = Math.round(performance.now() - startedAt);
+        latencyEl.textContent = ms + ' ms';
+        if (!res.ok) throw new Error('Bad response');
+        return res.json();
+      })
+      .then((data) => {
+        const time = data && data.time ? new Date(data.time) : new Date();
+        setState('online', 'checked ' + time.toLocaleTimeString());
+      })
+      .catch(() => {
+        setState('offline', 'checked ' + new Date().toLocaleTimeString());
+      });
+  </script>
+
+</body>
+</html>
