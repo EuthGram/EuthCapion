@@ -1,0 +1,10 @@
+{
+  "botName": "EuthCap",
+  "footer": "𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 @EuthGram",
+  "developer": "Euthle",
+  "tmdbApiKey": "",
+  "admins": [],
+  "captionTemplate": "{title} ({season}) ({year})\n\n╭───────────────────\n➥ Status: {status}\n➥ Episodes: {episodes}\n➥ Ratings: {rating} IMDb\n➥ Genres: {genres}\n├───────────────────\n➥ Runtime: {runtime}\n➥ Country: {country}\n➥ Language: {language}\n╰───────────────────\n\n≡ {overview}\n\n{footer}",
+  "pendingCaptionAdmins": [],
+  "conversationState": {}
+}
